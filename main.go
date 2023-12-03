@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"github.com/Mosich-dev/Hotel-API/API"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -13,13 +14,9 @@ func main() {
 	apiv1 := app.Group("/api/v1")
 
 	apiv1.Get("/foo", handleFoo)
-	app.Get("/eee", handleEee)
+	app.Get("/eee", API.HandleGetUsers)
+	app.Get("/eee/:id", API.HandleGetUser)
 	app.Listen(*listenAddr)
-}
-
-func handleEee(ctx *fiber.Ctx) error {
-	return ctx.JSON(map[string]string{"name": "Mosi", "id": "44"})
-
 }
 
 func handleFoo(ctx *fiber.Ctx) error {
