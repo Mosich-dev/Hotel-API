@@ -15,5 +15,5 @@ func HandleGetUsers(ctx *fiber.Ctx) error {
 }
 
 func HandleGetUser(ctx *fiber.Ctx) error {
-	return ctx.JSON("Hi! id")
+	return ctx.JSON("Hello! id Route")
 }
