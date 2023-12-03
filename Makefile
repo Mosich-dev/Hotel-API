@@ -1,6 +1,9 @@
 build:
-	go fmt main.go
-	go build -o hotel.exe
+	@go fmt main.go
+	@go build -o bin/hotel.exe
 
 run: build
-	./hotel
+	@./bin/hotel
+
+test:
+	@go test -v ./..
