@@ -3,11 +3,9 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"github.com/Mosich-dev/Hotel-API/API"
-	"github.com/Mosich-dev/Hotel-API/types"
+	"github.com/Mosich-dev/Hotel-API/db"
 	"github.com/gofiber/fiber/v2"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
@@ -19,37 +17,33 @@ const (
 	userColl = "users"
 )
 
+var config = fiber.Config{
+	ErrorHandler: func(ctx *fiber.Ctx, err error) error {
+		return ctx.JSON(map[string]string{
+			"error": err.Error(),
+		})
+	},
+}
+
 func main() {
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(dburi))
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(client)
-	ctx := context.Background()
-	coll := client.Database(dbname).Collection(userColl)
-	user := types.User{
-		FirstName: "mosi",
-		LastName:  "che",
-	}
-	_, err = coll.InsertOne(ctx, user)
-	if err != nil {
-		log.Fatal(err)
-	}
-	var mosi types.User
-	err = coll.FindOne(ctx, bson.M{}).Decode(&mosi)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(mosi)
-	app := fiber.New()
+
+	app := fiber.New(config)
 	listenAddr := flag.String("listenaddr", ":5000", "The Listen address of the API server")
 	flag.Parse()
 
 	apiv1 := app.Group("/api/v1")
 
+	// Handler init
+	userHandler := API.NewUserHandler(db.NewMongoUserStore(client))
+
+	// Routing
 	apiv1.Get("/foo", handleFoo)
-	app.Get("/eee", API.HandleGetUsers)
-	app.Get("/eee/:id", API.HandleGetUser)
+	app.Get("/eee", userHandler.HandleGetUsers)
+	app.Get("/eee/:id", userHandler.HandleGetUser)
 	app.Listen(*listenAddr)
 }
 
