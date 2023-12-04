@@ -12,9 +12,7 @@ import (
 )
 
 const (
-	dburi    = "mongodb://localhost:27017"
-	dbname   = "hotel-api"
-	userColl = "users"
+	dburi = "mongodb://localhost:27017"
 )
 
 var config = fiber.Config{
