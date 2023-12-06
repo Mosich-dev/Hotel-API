@@ -34,21 +34,22 @@ func isEmailValid(e string) bool {
 	return emailRegex.MatchString(e)
 }
 
-func (params CreateUserParams) Validate() error {
+func (params CreateUserParams) Validate() []string {
+	var errors []string
 	if len(params.FirstName) < minFirstName {
-		return fmt.Errorf("first name length most be atleast %d characters", minFirstName)
+		errors = append(errors, fmt.Sprintf("first name length most be atleast %d characters", minFirstName))
 	}
 	if len(params.LastName) < minLastName {
-		return fmt.Errorf("last name length most be atleast %d characters", minLastName)
+		errors = append(errors, fmt.Sprintf("last name length most be atleast %d characters", minLastName))
 	}
 	if len(params.Password) < minPassword {
-		return fmt.Errorf("password length most be atleast %d characters", minPassword)
+		errors = append(errors, fmt.Sprintf("password length most be atleast %d characters", minPassword))
 	}
 	if !isEmailValid(params.Email) {
-		return fmt.Errorf("email is unvalid")
+		errors = append(errors, fmt.Sprintf("email is unvalid"))
 	}
 
-	return nil
+	return errors
 }
 
 func NewUserFromParams(params CreateUserParams) (*User, error) {

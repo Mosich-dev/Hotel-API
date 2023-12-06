@@ -1,7 +1,6 @@
 package API
 
 import (
-	"fmt"
 	"github.com/Mosich-dev/Hotel-API/db"
 	"github.com/Mosich-dev/Hotel-API/types"
 	"github.com/gofiber/fiber/v2"
@@ -22,8 +21,8 @@ func (h *UserHandler) HandlePostUser(ctx *fiber.Ctx) error {
 	if err := ctx.BodyParser(&params); err != nil {
 		return err
 	}
-	if err := params.Validate(); err != nil {
-		return err
+	if errors := params.Validate(); errors != nil {
+		return ctx.JSON(errors)
 	}
 	user, err := types.NewUserFromParams(params)
 	if err != nil {
@@ -33,7 +32,6 @@ func (h *UserHandler) HandlePostUser(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(createdUser)
 
 	return ctx.JSON(createdUser)
 }
