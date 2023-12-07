@@ -40,7 +40,8 @@ func main() {
 
 	// Routing
 	apiv1.Get("/foo", handleFoo)
-	apiv1.Post("/user", userHandler.HandlePostUser)
+	apiv1.Post("/user", userHandler.HandleInsertUser)
+	apiv1.Delete("/user", userHandler.HandleDeleteUser)
 	apiv1.Get("/user", userHandler.HandleGetUsers)
 	app.Get("/eee/:id", userHandler.HandleGetUser)
 	app.Listen(*listenAddr)

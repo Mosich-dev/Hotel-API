@@ -16,12 +16,12 @@ func NewUserHandler(userStore db.UserStore) *UserHandler {
 	}
 }
 
-func (h *UserHandler) HandlePostUser(ctx *fiber.Ctx) error {
+func (h *UserHandler) HandleInsertUser(ctx *fiber.Ctx) error {
 	var params types.CreateUserParams
 	if err := ctx.BodyParser(&params); err != nil {
 		return err
 	}
-	if errors := params.Validate(); errors != nil {
+	if errors := params.Validate(); len(errors) != 0 {
 		return ctx.JSON(errors)
 	}
 	user, err := types.NewUserFromParams(params)
@@ -51,4 +51,23 @@ func (h *UserHandler) HandleGetUsers(ctx *fiber.Ctx) error {
 		return err
 	}
 	return ctx.JSON(users)
+}
+
+func (h *UserHandler) HandlePutUsers(ctx *fiber.Ctx) error {
+	return nil
+}
+
+func (h *UserHandler) HandleDeleteUser(ctx *fiber.Ctx) error {
+	type unMarshalUserID struct {
+		Id string
+	}
+	var userID unMarshalUserID
+
+	if err := ctx.BodyParser(&userID); err != nil {
+		return err
+	}
+	if err := h.userStore.DeleteUser(ctx.Context(), userID.Id); err != nil {
+		return err
+	}
+	return ctx.JSON(userID)
 }
