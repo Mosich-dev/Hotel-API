@@ -34,19 +34,19 @@ func isEmailValid(e string) bool {
 	return emailRegex.MatchString(e)
 }
 
-func (params CreateUserParams) Validate() []string {
-	var errors []string
+func (params CreateUserParams) Validate() map[string]string {
+	errors := map[string]string{} // Weird error when init error="assignment to entry in nil map" map with 'var'
 	if len(params.FirstName) < minFirstName {
-		errors = append(errors, fmt.Sprintf("first name length most be atleast %d characters", minFirstName))
+		errors["firstName"] = fmt.Sprintf("first name length most be atleast %d characters", minFirstName)
 	}
 	if len(params.LastName) < minLastName {
-		errors = append(errors, fmt.Sprintf("last name length most be atleast %d characters", minLastName))
+		errors["lastName"] = fmt.Sprintf("last name length most be atleast %d characters", minLastName)
 	}
 	if len(params.Password) < minPassword {
-		errors = append(errors, fmt.Sprintf("password length most be atleast %d characters", minPassword))
+		errors["password"] = fmt.Sprintf("password length most be atleast %d characters", minPassword)
 	}
 	if !isEmailValid(params.Email) {
-		errors = append(errors, fmt.Sprintf("email is unvalid"))
+		errors["email"] = fmt.Sprintf("email is unvalid")
 	}
 
 	return errors
