@@ -24,7 +24,7 @@ var config = fiber.Config{
 }
 
 func main() {
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(dburi))
+	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(dburi))
 	if err != nil {
 		log.Fatal(err)
 	}
