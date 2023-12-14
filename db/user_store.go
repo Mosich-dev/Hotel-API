@@ -80,9 +80,12 @@ func (s MongoUserStore) DeleteUser(ctx context.Context, userID string) error {
 	if err != nil {
 		return err
 	}
-	_, err = s.collection.DeleteOne(ctx, bson.M{"_id": oid})
+	deleteResult, err := s.collection.DeleteOne(ctx, bson.M{"_id": oid})
 	if err != nil {
 		return err
+	}
+	if deleteResult.DeletedCount == 0 {
+		return mongo.ErrNoDocuments
 	}
 	return nil
 }
