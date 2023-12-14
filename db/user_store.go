@@ -13,8 +13,8 @@ const USERCOLL = "users"
 type UserStore interface {
 	GetUserByID(context.Context, string) (*types.User, error)
 	GetUsers(context.Context) ([]*types.User, error)
-	InsertUser(ctx context.Context, user *types.User) (*types.User, error)
-	DeleteUser(ctx context.Context, userID string) error
+	InsertUser(context.Context, *types.User) (*types.User, error)
+	DeleteUser(context.Context, string) error
 }
 
 type MongoUserStore struct {
