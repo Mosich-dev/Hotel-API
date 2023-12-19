@@ -23,7 +23,7 @@ func (h *UserHandler) HandleInsertUser(ctx *fiber.Ctx) error {
 	if err := ctx.BodyParser(&params); err != nil {
 		return err
 	}
-	if errors := params.Validate(); len(errors) != 0 {
+	if errors := params.ValidateAll(); len(errors) != 0 {
 		return ctx.JSON(errors)
 	}
 	user, err := types.NewUserFromParams(params)
@@ -58,10 +58,6 @@ func (h *UserHandler) HandleGetUsers(ctx *fiber.Ctx) error {
 	return ctx.JSON(users)
 }
 
-func (h *UserHandler) HandlePutUsers(ctx *fiber.Ctx) error {
-	return nil
-}
-
 func (h *UserHandler) HandleDeleteUser(ctx *fiber.Ctx) error {
 	type unMarshalUserID struct {
 		Id string
@@ -76,3 +72,42 @@ func (h *UserHandler) HandleDeleteUser(ctx *fiber.Ctx) error {
 	}
 	return ctx.JSON(userID)
 }
+
+func (h *UserHandler) HandlePutUser(ctx *fiber.Ctx) error {
+	var (
+		params types.UpdateUserParams
+		userID = ctx.Params("id")
+	)
+	if err := ctx.BodyParser(&params); err != nil {
+		return err
+	}
+
+	if err := h.userStore.UpdateUser(ctx.Context(), userID, params); err != nil {
+		return err
+	}
+	return ctx.JSON(map[string]string{"updated": userID})
+}
+
+//func (h *UserHandler) HandlePutUser(ctx *fiber.Ctx) error {
+//	var (
+//		params types.UpdateUserParams
+//		userID string
+//	)
+//	userID = ctx.Params("id")
+//	oid, err := primitive.ObjectIDFromHex(userID)
+//	if err != nil {
+//		return err
+//	}
+//	if err := ctx.BodyParser(&params); err != nil {
+//		return err
+//	}
+//	fmt.Println(params)
+//	filter := bson.M{"_id": oid}
+//	if err := h.userStore.UpdateUser(ctx.Context(), filter, params); err != nil {
+//		return err
+//	}
+//
+//	return ctx.JSON(map[string]string{
+//		"deleted": userID,
+//	})
+//}

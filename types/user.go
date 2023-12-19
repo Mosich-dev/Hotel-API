@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 	"regexp"
@@ -9,16 +10,36 @@ import (
 
 const (
 	bcryptCost   = 12
-	minFirstName = 2
-	minLastName  = 2
+	MinFirstName = 2
+	MinLastName  = 2
 	minPassword  = 7
 )
 
+type baseUserParams struct {
+	FirstName string `bson:"firstName" json:"firstName"`
+	LastName  string `bson:"lastName" json:"lastName"`
+}
+
 type CreateUserParams struct {
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	Email     string `json:"email"`
-	Password  string `json:"password"`
+	baseUserParams
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type UpdateUserParams struct {
+	baseUserParams
+}
+
+func (p UpdateUserParams) ToBsonM() bson.M {
+
+	d := bson.M{}
+	if len(p.FirstName) > 0 {
+		d["firstName"] = p.FirstName
+	}
+	if len(p.LastName) > 0 {
+		d["lastName"] = p.LastName
+	}
+	return d
 }
 
 type User struct {
@@ -34,13 +55,14 @@ func isEmailValid(e string) bool {
 	return emailRegex.MatchString(e)
 }
 
-func (params CreateUserParams) Validate() map[string]string {
-	errors := map[string]string{} // Weird error when init error="assignment to entry in nil map" map with 'var'
-	if len(params.FirstName) < minFirstName {
-		errors["firstName"] = fmt.Sprintf("first name length most be atleast %d characters", minFirstName)
+func (params CreateUserParams) ValidateAll() map[string]string {
+	errors := map[string]string{}
+
+	if len(params.FirstName) < MinFirstName {
+		errors["firstName"] = fmt.Sprintf("first name length most be atleast %d characters", MinFirstName)
 	}
-	if len(params.LastName) < minLastName {
-		errors["lastName"] = fmt.Sprintf("last name length most be atleast %d characters", minLastName)
+	if len(params.LastName) < MinLastName {
+		errors["lastName"] = fmt.Sprintf("last name length most be atleast %d characters", MinLastName)
 	}
 	if len(params.Password) < minPassword {
 		errors["password"] = fmt.Sprintf("password length most be atleast %d characters", minPassword)
