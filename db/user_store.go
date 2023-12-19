@@ -95,9 +95,8 @@ func (s MongoUserStore) DeleteUser(ctx context.Context, userID string) error {
 	return nil
 }
 
-// bsonMValueLen TODO: refactor
 func bsonMValueLen(m bson.M, key string) int {
-	return len(fmt.Sprintf("", m[key])) - 17
+	return len(fmt.Sprintf("%v", m[key]))
 }
 
 // UpdateUser TODO: refactor
