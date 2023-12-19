@@ -95,29 +95,25 @@ func (s MongoUserStore) DeleteUser(ctx context.Context, userID string) error {
 	return nil
 }
 
-func bsonMValueLen(m bson.M, key string) int {
-	return len(fmt.Sprintf("%v", m[key]))
-}
-
 // UpdateUser TODO: refactor
-func (s *MongoUserStore) UpdateUser(ctx context.Context, id string, params types.UpdateUserParams) error {
+func (s MongoUserStore) UpdateUser(ctx context.Context, id string, params types.UpdateUserParams) error {
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return err
 	}
 	values := params.ToBsonM()
-	if values["firstName"] != nil {
-		if bsonMValueLen(values, "firstName") < types.MinFirstName {
+	if values.M["firstName"] != nil {
+		if values.Len("firstName") < types.MinFirstName {
 			return errors.New(fmt.Sprintf("first name length most be atleast %d characters", types.MinFirstName))
 		}
 	}
 
-	if values["lastName"] != nil {
-		if bsonMValueLen(values, "lastName") < types.MinLastName {
+	if values.M["lastName"] != nil {
+		if values.Len("lastName") < types.MinLastName {
 			return errors.New(fmt.Sprintf("last name length most be atleast %d characters", types.MinLastName))
 		}
 	}
-	update := bson.D{{"$set", values}}
+	update := bson.D{{"$set", values.M}}
 	_, err = s.collection.UpdateByID(ctx, oid, update)
 	if err != nil {
 		return err

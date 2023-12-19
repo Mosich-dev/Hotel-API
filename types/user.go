@@ -30,16 +30,25 @@ type UpdateUserParams struct {
 	baseUserParams
 }
 
-func (p UpdateUserParams) ToBsonM() bson.M {
+type UpdateUserParamsBsonM struct {
+	bson.M
+}
+
+func (p UpdateUserParams) ToBsonM() UpdateUserParamsBsonM {
 
 	d := bson.M{}
+
 	if len(p.FirstName) > 0 {
 		d["firstName"] = p.FirstName
 	}
 	if len(p.LastName) > 0 {
 		d["lastName"] = p.LastName
 	}
-	return d
+	return UpdateUserParamsBsonM{d}
+}
+
+func (m UpdateUserParamsBsonM) Len(key string) int {
+	return len(fmt.Sprintf("%v", m.M[key]))
 }
 
 type User struct {
