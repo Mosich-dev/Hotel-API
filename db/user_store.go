@@ -120,15 +120,3 @@ func (s MongoUserStore) UpdateUser(ctx context.Context, id string, params types.
 	}
 	return nil
 }
-
-//func (s MongoUserStore) UpdateUser(ctx context.Context, filter bson.M, params types.UpdateUserParams) error {
-//	update := bson.D{
-//		{"$set", params.ToBsonM()},
-//	}
-//	fmt.Println("inja")
-//	_, err := s.collection.UpdateOne(ctx, filter, update)
-//	if err != nil {
-//		return err
-//	}
-//	return nil
-//}

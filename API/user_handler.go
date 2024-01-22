@@ -87,27 +87,3 @@ func (h *UserHandler) HandlePutUser(ctx *fiber.Ctx) error {
 	}
 	return ctx.JSON(map[string]string{"updated": userID})
 }
-
-//func (h *UserHandler) HandlePutUser(ctx *fiber.Ctx) error {
-//	var (
-//		params types.UpdateUserParams
-//		userID string
-//	)
-//	userID = ctx.Params("id")
-//	oid, err := primitive.ObjectIDFromHex(userID)
-//	if err != nil {
-//		return err
-//	}
-//	if err := ctx.BodyParser(&params); err != nil {
-//		return err
-//	}
-//	fmt.Println(params)
-//	filter := bson.M{"_id": oid}
-//	if err := h.userStore.UpdateUser(ctx.Context(), filter, params); err != nil {
-//		return err
-//	}
-//
-//	return ctx.JSON(map[string]string{
-//		"deleted": userID,
-//	})
-//}
