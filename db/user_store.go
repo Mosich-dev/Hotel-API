@@ -14,7 +14,12 @@ const USERCOLL = "users"
 
 type Map map[string]any
 
+type Droppable interface {
+	Drop(ctx context.Context) error
+}
+
 type UserStore interface {
+	Droppable
 	GetUserByID(ctx context.Context, id string) (*types.User, error)
 	GetUsers(ctx context.Context) ([]*types.User, error)
 	InsertUser(ctx context.Context, user *types.User) (*types.User, error)
@@ -24,16 +29,19 @@ type UserStore interface {
 
 type MongoUserStore struct {
 	client     *mongo.Client
-	dbname     string
 	collection *mongo.Collection
 }
 
-func NewMongoUserStore(client *mongo.Client) *MongoUserStore {
+func NewMongoUserStore(client *mongo.Client, DBName string) *MongoUserStore {
 	return &MongoUserStore{
 		client:     client,
-		dbname:     DBNAME,
-		collection: client.Database(DBNAME).Collection(USERCOLL),
+		collection: client.Database(DBName).Collection(USERCOLL),
 	}
+}
+
+func (s MongoUserStore) Drop(ctx context.Context) error {
+	fmt.Println("-------Dropping User Collection-------")
+	return s.collection.Drop(ctx)
 }
 
 func (s MongoUserStore) GetUserByID(ctx context.Context, id string) (*types.User, error) {

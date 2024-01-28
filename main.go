@@ -36,19 +36,13 @@ func main() {
 	apiv1 := app.Group("/api/v1")
 
 	// Handler init
-	userHandler := API.NewUserHandler(db.NewMongoUserStore(client))
+	userHandler := API.NewUserHandler(db.NewMongoUserStore(client, db.DBNAME))
 
 	// Routing
-	apiv1.Get("/foo", handleFoo)
 	apiv1.Post("/user", userHandler.HandleInsertUser)
 	apiv1.Delete("/user", userHandler.HandleDeleteUser)
 	apiv1.Put("/user/:id", userHandler.HandlePutUser)
 	apiv1.Get("/user", userHandler.HandleGetUsers)
 	app.Get("/eee/:id", userHandler.HandleGetUser)
 	app.Listen(*listenAddr)
-}
-
-func handleFoo(ctx *fiber.Ctx) error {
-	return ctx.JSON(map[string]string{"date": "6th azar", "id": "0"})
-
 }
