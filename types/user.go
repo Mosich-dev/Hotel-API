@@ -12,7 +12,7 @@ const (
 	bcryptCost   = 12
 	MinFirstName = 2
 	MinLastName  = 2
-	minPassword  = 7
+	MinPassword  = 7
 )
 
 type InsertUserParams struct {
@@ -70,8 +70,8 @@ func (params InsertUserParams) ValidateAll() map[string]string {
 	if len(params.LastName) < MinLastName {
 		errors["lastName"] = fmt.Sprintf("last name length most be atleast %d characters", MinLastName)
 	}
-	if len(params.Password) < minPassword {
-		errors["password"] = fmt.Sprintf("password length most be atleast %d characters", minPassword)
+	if len(params.Password) < MinPassword {
+		errors["password"] = fmt.Sprintf("password length most be atleast %d characters", MinPassword)
 	}
 	if !isEmailValid(params.Email) {
 		errors["email"] = fmt.Sprintf("email is invalid")
