@@ -15,19 +15,16 @@ const (
 	minPassword  = 7
 )
 
-type baseUserParams struct {
+type InsertUserParams struct {
 	FirstName string `bson:"firstName" json:"firstName"`
 	LastName  string `bson:"lastName" json:"lastName"`
-}
-
-type CreateUserParams struct {
-	baseUserParams
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email     string `bson:"email" json:"email"`
+	Password  string `bson:"password" json:"password"`
 }
 
 type UpdateUserParams struct {
-	baseUserParams
+	FirstName string `bson:"firstName" json:"firstName"`
+	LastName  string `bson:"lastName" json:"lastName"`
 }
 
 type UpdateUserParamsBsonM struct {
@@ -64,7 +61,7 @@ func isEmailValid(e string) bool {
 	return emailRegex.MatchString(e)
 }
 
-func (params CreateUserParams) ValidateAll() map[string]string {
+func (params InsertUserParams) ValidateAll() map[string]string {
 	errors := map[string]string{}
 
 	if len(params.FirstName) < MinFirstName {
@@ -77,13 +74,13 @@ func (params CreateUserParams) ValidateAll() map[string]string {
 		errors["password"] = fmt.Sprintf("password length most be atleast %d characters", minPassword)
 	}
 	if !isEmailValid(params.Email) {
-		errors["email"] = fmt.Sprintf("email is unvalid")
+		errors["email"] = fmt.Sprintf("email is invalid")
 	}
 
 	return errors
 }
 
-func NewUserFromParams(params CreateUserParams) (*User, error) {
+func NewUserFromParams(params InsertUserParams) (*User, error) {
 	encpw, err := bcrypt.GenerateFromPassword([]byte(params.Password), bcryptCost)
 	if err != nil {
 		return nil, err

@@ -19,12 +19,12 @@ func NewUserHandler(userStore db.UserStore) *UserHandler {
 }
 
 func (h *UserHandler) HandleInsertUser(ctx *fiber.Ctx) error {
-	var params types.CreateUserParams
+	var params types.InsertUserParams
 	if err := ctx.BodyParser(&params); err != nil {
 		return err
 	}
-	if errors := params.ValidateAll(); len(errors) != 0 {
-		return ctx.JSON(errors)
+	if valErrs := params.ValidateAll(); len(valErrs) != 0 {
+		return ctx.Status(fiber.StatusBadRequest).JSON(valErrs)
 	}
 	user, err := types.NewUserFromParams(params)
 	if err != nil {
@@ -34,8 +34,7 @@ func (h *UserHandler) HandleInsertUser(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-
-	return ctx.JSON(createdUser)
+	return ctx.Status(fiber.StatusCreated).JSON(createdUser)
 }
 
 func (h *UserHandler) HandleGetUser(ctx *fiber.Ctx) error {
@@ -78,6 +77,7 @@ func (h *UserHandler) HandlePutUser(ctx *fiber.Ctx) error {
 		params types.UpdateUserParams
 		userID = ctx.Params("id")
 	)
+
 	if err := ctx.BodyParser(&params); err != nil {
 		return err
 	}
@@ -85,5 +85,5 @@ func (h *UserHandler) HandlePutUser(ctx *fiber.Ctx) error {
 	if err := h.userStore.UpdateUser(ctx.Context(), userID, params); err != nil {
 		return err
 	}
-	return ctx.JSON(map[string]string{"updated": userID})
+	return ctx.Status(fiber.StatusOK).JSON(map[string]string{"updated": userID})
 }
